@@ -10,18 +10,23 @@ if os.path.exists(env_path):
 else:
     load_dotenv()
 
-# 1. Connect to Neon DB
+# 1. Connect to Database (Neon / Render Postgres / SQLite fallback)
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
-    raise ValueError("DATABASE_URL is not set in .env. Please add your Neon DB connection string.")
+    print("Warning: DATABASE_URL is not set. Using local SQLite fallback (sqlite:///./gateway.db).")
+    DATABASE_URL = "sqlite:///./gateway.db"
 
-# SQLAlchemy 2.0+ defaults to psycopg (v3). Since we have psycopg2 installed, 
-# we need to ensure the dialect string uses psycopg2 explicitly.
-if DATABASE_URL.startswith("postgresql://"):
-    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
-
-# Create the SQLAlchemy engine
-engine = create_engine(DATABASE_URL)
+if DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+else:
+    # SQLAlchemy 2.0+ defaults to psycopg (v3). Since we have psycopg2 installed, 
+    # we need to ensure the dialect string uses psycopg2 explicitly.
+    # Also handles 'postgres://' which is default on Render Postgres.
+    if DATABASE_URL.startswith("postgresql://"):
+        DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
+    elif DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
+    engine = create_engine(DATABASE_URL)
 
 # Create a session factory for interacting with the database
 SessionLocal = sessionmaker(bind=engine)

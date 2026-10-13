@@ -282,13 +282,14 @@ def serve_static_or_spa(full_path: str):
         return FileResponse(index_path)
     raise HTTPException(status_code=404, detail="File not found")
 
-def start_server(host: str = "127.0.0.1", port: int = 8080):
+def start_server(host: str = "0.0.0.0", port: int = 8080):
     import uvicorn
     print(f"Starting server on http://{host}:{port} ...")
     uvicorn.run(app, host=host, port=port, log_level="info")
 
 if __name__ == "__main__":
+    host_to_use = os.getenv("HOST", "0.0.0.0")
     port_to_use = int(os.getenv("PORT", "8080"))
-    start_server(port=port_to_use)
+    start_server(host=host_to_use, port=port_to_use)
 
 
