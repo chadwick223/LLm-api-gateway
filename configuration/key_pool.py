@@ -128,3 +128,114 @@ class KeyPoolManager:
         available_again_time = current_time + max(5, seconds)
         
         self.cooldowns[cooldown_key] = available_again_time
+
+    def reload_keys(self):
+        """
+        Reloads the .env file and refreshes environment variables.
+        """
+        if os.path.exists(env_path):
+            load_dotenv(env_path, override=True)
+        else:
+            load_dotenv(override=True)
+
+    def get_cooldown_remaining(self, provider: str, index: int) -> int:
+        """
+        Returns the number of seconds remaining in cooldown for a key, or 0 if active.
+        """
+        cooldown_key = f"{provider}:{index}"
+        until = self.cooldowns.get(cooldown_key, 0)
+        current_time = time.time()
+        remaining = int(until - current_time)
+        return max(0, remaining)
+
+    @staticmethod
+    def mask_key(key: str) -> str:
+        """
+        Masks an API key for safe display in UI.
+        """
+        if not key:
+            return ""
+        if len(key) <= 8:
+            return "••••••••"
+        return f"{key[:6]}...{key[-4:]}"
+
+    def get_all_pool_status(self) -> dict:
+        """
+        Returns full status of key pools for all providers.
+        """
+        providers = ["groq", "gemini", "cloudflare", "nvidia", "ollama"]
+        status = {}
+        for prov in providers:
+            keys = self.get_keys(prov)
+            key_details = []
+            for idx, key in enumerate(keys):
+                remaining = self.get_cooldown_remaining(prov, idx)
+                key_details.append({
+                    "index": idx,
+                    "masked": self.mask_key(key),
+                    "full_key": key,
+                    "is_cooling": remaining > 0,
+                    "cooldown_remaining": remaining
+                })
+            status[prov] = {
+                "total_keys": len(keys),
+                "keys": key_details,
+                "has_available": len(self.available_indexes(prov)) > 0
+            }
+        return status
+
+
+def save_provider_keys(provider: str, keys: List[str], extra_vars: dict = None) -> bool:
+    """
+    Safely updates keys in configuration/.env and refreshes os.environ.
+    """
+    env_var_map = {
+        "groq": "GROQ_API_KEY",
+        "gemini": "GEMINI_API_KEY",
+        "cloudflare": "CLOUDFLARE_API_KEY",
+        "nvidia": "NVIDIA_API_KEY",
+        "ollama": "OLLAMA_API_KEY",
+    }
+    target_var = env_var_map.get(provider.lower())
+    if not target_var:
+        return False
+
+    joined_keys = ",".join([k.strip() for k in keys if k.strip()])
+    updates = {target_var: joined_keys}
+    if extra_vars:
+        for k, v in extra_vars.items():
+            if v is not None:
+                updates[k] = str(v).strip()
+
+    # Read existing .env lines
+    lines = []
+    if os.path.exists(env_path):
+        with open(env_path, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+
+    updated_keys = set()
+    new_lines = []
+    for line in lines:
+        stripped = line.strip()
+        matched = False
+        for var_name, var_value in updates.items():
+            if stripped.startswith(f"{var_name}=") or stripped.startswith(f'export {var_name}='):
+                new_lines.append(f'{var_name}="{var_value}"\n')
+                updated_keys.add(var_name)
+                matched = True
+                break
+        if not matched:
+            new_lines.append(line)
+
+    for var_name, var_value in updates.items():
+        if var_name not in updated_keys:
+            new_lines.append(f'{var_name}="{var_value}"\n')
+
+    with open(env_path, "w", encoding="utf-8") as f:
+        f.writelines(new_lines)
+
+    for var_name, var_value in updates.items():
+        os.environ[var_name] = var_value
+
+    load_dotenv(env_path, override=True)
+    return True

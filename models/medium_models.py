@@ -82,7 +82,33 @@ def create_client_for_provider(provider: str, api_key: str):
         return client_instance
 
 
-def execute_medium_task(user_prompt: str) -> str:
+def extract_error_status(exc) -> int:
+    """Extract real HTTP status code from an API error or response object."""
+    status = getattr(exc, "status_code", None)
+    if isinstance(status, int) and status > 0:
+        return status
+    response = getattr(exc, "response", None)
+    if response is not None:
+        resp_status = getattr(response, "status_code", None)
+        if isinstance(resp_status, int) and resp_status > 0:
+            return resp_status
+    msg = str(exc).lower()
+    if "429" in msg or "rate limit" in msg:
+        return 429
+    if "401" in msg or "authentication" in msg or "unauthorized" in msg:
+        return 401
+    if "403" in msg or "forbidden" in msg:
+        return 403
+    if "404" in msg or "not found" in msg:
+        return 404
+    if "503" in msg or "service unavailable" in msg:
+        return 503
+    if "502" in msg or "bad gateway" in msg:
+        return 502
+    return 500
+
+
+def execute_medium_task(user_prompt: str, return_details: bool = False):
     """
     Decision-making engine for Medium tasks:
     1. Estimates user prompt token count.
@@ -95,7 +121,10 @@ def execute_medium_task(user_prompt: str) -> str:
     try:
         estimated_tokens = estimate_token(user_prompt)
     except ValueError as error:
-        return "Error: " + str(error)
+        err_msg = "Error: " + str(error)
+        if return_details:
+            return {"error": err_msg, "text": err_msg}
+        return err_msg
 
     print(f"[Medium Decision Engine] Prompt Estimated Tokens: {estimated_tokens}\n")
 
@@ -126,12 +155,23 @@ def execute_medium_task(user_prompt: str) -> str:
                 client = create_client_for_provider(provider, api_key)
 
                 try:
-                    response = client.chat.completions.create(
-                        model=model_name,
-                        messages=[{"role": "user", "content": user_prompt}],
-                        temperature=DEFAULT_TEMPERATURE,
-                        max_tokens=max_output_tokens
-                    )
+                    if hasattr(client.chat.completions, "with_raw_response"):
+                        raw_response = client.chat.completions.with_raw_response.create(
+                            model=model_name,
+                            messages=[{"role": "user", "content": user_prompt}],
+                            temperature=DEFAULT_TEMPERATURE,
+                            max_tokens=max_output_tokens
+                        )
+                        real_http_status = getattr(raw_response, "status_code", 200)
+                        response = raw_response.parse()
+                    else:
+                        response = client.chat.completions.create(
+                            model=model_name,
+                            messages=[{"role": "user", "content": user_prompt}],
+                            temperature=DEFAULT_TEMPERATURE,
+                            max_tokens=max_output_tokens
+                        )
+                        real_http_status = 200
 
                     prompt_tokens = 0
                     completion_tokens = 0
@@ -145,15 +185,26 @@ def execute_medium_task(user_prompt: str) -> str:
                         model_name=model_name,
                         endpoint="chat.completions",
                         status="ok",
-                        http_status=200,
+                        http_status=real_http_status,
                         prompt_tokens=prompt_tokens,
                         completion_tokens=completion_tokens
                     )
 
-                    return response.choices[0].message.content
+                    content_text = response.choices[0].message.content
+                    if return_details:
+                        return {
+                            "text": content_text,
+                            "provider": provider,
+                            "model": model_name,
+                            "key_index": key_index,
+                            "prompt_tokens": prompt_tokens,
+                            "completion_tokens": completion_tokens
+                        }
+                    return content_text
 
-                except groq.RateLimitError:
-                    print(f"WARNING: Rate limit hit on Groq Key index {key_index}. Putting it in cooldown.")
+                except groq.RateLimitError as exc:
+                    err_status = extract_error_status(exc)
+                    print(f"WARNING: Rate limit hit on Groq Key index {key_index} (HTTP {err_status}). Putting it in cooldown.")
                     key_pool.report_rate_limited(provider="groq", index=key_index, seconds=60)
                     usage_store.record_call(
                         provider="groq",
@@ -161,17 +212,17 @@ def execute_medium_task(user_prompt: str) -> str:
                         model_name=model_name,
                         endpoint="chat.completions",
                         status="error",
-                        http_status=429
+                        http_status=err_status
                     )
                     print("Retrying with next available key or model candidate...\n")
-                    return execute_medium_task(user_prompt)
+                    return execute_medium_task(user_prompt, return_details=return_details)
 
                 except Exception as exc:
+                    err_status = extract_error_status(exc)
                     error_message = str(exc)
-                    lower_error = error_message.lower()
 
-                    if "rate" in lower_error or "429" in lower_error:
-                        print(f"WARNING: Rate limit hit on {provider} Key index {key_index}. Putting it in cooldown.")
+                    if err_status == 429:
+                        print(f"WARNING: Rate limit hit on {provider} Key index {key_index} (HTTP {err_status}). Putting it in cooldown.")
                         key_pool.report_rate_limited(provider=provider, index=key_index, seconds=60)
                         usage_store.record_call(
                             provider=provider,
@@ -179,10 +230,10 @@ def execute_medium_task(user_prompt: str) -> str:
                             model_name=model_name,
                             endpoint="chat.completions",
                             status="error",
-                            http_status=429
+                            http_status=err_status
                         )
                         print("Retrying with next available key or model candidate...\n")
-                        return execute_medium_task(user_prompt)
+                        return execute_medium_task(user_prompt, return_details=return_details)
                     else:
                         usage_store.record_call(
                             provider=provider,
@@ -190,8 +241,15 @@ def execute_medium_task(user_prompt: str) -> str:
                             model_name=model_name,
                             endpoint="chat.completions",
                             status="error",
-                            http_status=500
+                            http_status=err_status
                         )
-                        return "Error: " + error_message
+                        print(f"Candidate {provider} ({model_name}) error (HTTP {err_status}): {error_message}. Falling back to next candidate...\n")
+                        continue
 
-    return "Error: All candidate models and API keys are currently exhausted, cooling down, or token limits exceeded."
+
+
+    fallback_err = "Error: All candidate models and API keys are currently exhausted, cooling down, or token limits exceeded."
+    if return_details:
+        return {"error": fallback_err, "text": fallback_err}
+    return fallback_err
+
