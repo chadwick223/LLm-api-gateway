@@ -26,6 +26,6 @@ if __name__ == "__main__":
     agent = CodingAgent()
     
     # Test Prompt
-    prompt = " correct the syntax issue of this code"
+    prompt = " refactor this  code"
     print(f"\nUser: {prompt}\n")
     agent.run(prompt)

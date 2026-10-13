@@ -17,7 +17,9 @@ class KeyPoolManager:
         env_var_map = {
             "groq": "GROQ_API_KEY",
             "gemini": "GEMINI_API_KEY",
-            # Add other providers here as needed
+            "cloudflare": "CLOUDFLARE_API_KEY",
+            "nvidia": "NVIDIA_API_KEY",
+            "ollama": "OLLAMA_API_KEY",
         }
         
         env_var = env_var_map.get(provider.lower())

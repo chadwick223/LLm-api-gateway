@@ -1,27 +1,26 @@
 import os
 from dotenv import load_dotenv
+from openai import OpenAI
 
 # Load environment variables
 load_dotenv()
 
-# Retrieve API Key and Base URL for the cloud provider
-API_KEY = os.getenv("OLLAMA_API_KEY")
-BASE_URL = os.getenv("OLLAMA_BASE_URL")
+# Retrieve API Key and Base URL (defaults to standard local Ollama endpoint)
+API_KEY = os.getenv("OLLAMA_API_KEY", "ollama")
+BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
 
-if not API_KEY or not BASE_URL:
-    raise ValueError("OLLAMA_API_KEY or OLLAMA_BASE_URL is not set. Please check your .env file.")
+# Initialize OpenAI client pointed to Ollama OpenAI-compatible endpoint
+client = OpenAI(
+    api_key=API_KEY,
+    base_url=BASE_URL,
+)
 
-# You can initialize your preferred client here (e.g., the OpenAI client pointing to the Ollama endpoint)
-# from openai import OpenAI
-# client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
-
-# Define the best coding models available on Ollama cloud providers
+# Verified models available on Ollama library (ollama.com/library)
 CODING_MODELS = {
-    "qwen_coder_30b": "qwen3-coder:30b",
-    "gemma_12b": "gemma4:12b",
-    "devstral_24b": "devstral:24b"
+    "gemma4_31b": "gemma4:31b",
+    "gpt_oss_120b": "gpt-oss:120b",
+    "gpt_oss_20b": "gpt-oss:20b",
 }
 
 # Default API Configuration Parameters
 DEFAULT_TEMPERATURE = 0.2
-DEFAULT_MAX_TOKENS = 4096
