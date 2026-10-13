@@ -1,0 +1,114 @@
+===========================================================================
+TEST 2: RATE LIMITER VERIFICATION (PARALLEL EXECUTION)
+===========================================================================
+Plan:
+1. Thread A starts CodingAgent() (loading BGE model takes ~8-12 seconds).
+2. Thread B in parallel fires 30 requests to Groq Key 0 (filling 30 RPM limit).
+3. By the time CodingAgent reaches rate_limiter.get_valid_key(), Key 0 is at >= 30 RPM.
+4. Rate limiter intercepts Key 0: '[groq] Key 0 exceeded RPM limit. Skipping.'
+5. Key rotation activates -> Groq Key 1 is selected to serve the prompt!
+===========================================================================
+
+[Main] Launching both threads in parallel now...
+
+[Thread-Flooder] Starting flood of 30 requests on Groq Key 0...
+
+[Thread-Agent] Starting CodingAgent initialization...
+Initializing Semantic Router (Loading BGE model)...
+============================================================
+STARTING RATE FLOODER: Sending 30 requests for Groq Key Index 0...
+============================================================
+[Flooder] Request 03/30 on Key 0 succeeded in 0.77s (Tokens: 72+1)
+[Flooder] Request 07/30 on Key 0 succeeded in 0.30s (Tokens: 72+1)
+[Flooder] Request 02/30 on Key 0 succeeded in 0.78s (Tokens: 72+1)
+[Flooder] Request 05/30 on Key 0 succeeded in 0.77s (Tokens: 72+1)
+[Flooder] Request 04/30 on Key 0 succeeded in 0.77s (Tokens: 72+1)
+[Flooder] Request 06/30 on Key 0 succeeded in 1.10s (Tokens: 72+1)
+[Flooder] Request 01/30 on Key 0 succeeded in 2.03s (Tokens: 72+1)
+[Flooder] Request 11/30 on Key 0 succeeded in 0.43s (Tokens: 72+1)
+[Flooder] Request 10/30 on Key 0 succeeded in 0.45s (Tokens: 72+1)
+[Flooder] Request 09/30 on Key 0 succeeded in 0.70s (Tokens: 72+1)
+[Flooder] Request 12/30 on Key 0 succeeded in 0.42s (Tokens: 72+1)
+[Flooder] Request 08/30 on Key 0 succeeded in 0.78s (Tokens: 72+1)
+[Flooder] Request 13/30 on Key 0 succeeded in 0.46s (Tokens: 72+1)
+[Flooder] Request 14/30 on Key 0 succeeded in 0.62s (Tokens: 72+1)
+[Flooder] Request 16/30 on Key 0 succeeded in 0.59s (Tokens: 72+1)
+[Flooder] Request 15/30 on Key 0 succeeded in 0.69s (Tokens: 72+1)
+[Flooder] Request 17/30 on Key 0 succeeded in 0.41s (Tokens: 72+1)
+[Flooder] Request 19/30 on Key 0 succeeded in 0.45s (Tokens: 72+1)
+[Flooder] Request 18/30 on Key 0 succeeded in 0.87s (Tokens: 72+1)
+[Flooder] Request 20/30 on Key 0 succeeded in 0.53s (Tokens: 72+1)
+[Flooder] Request 21/30 on Key 0 succeeded in 0.44s (Tokens: 72+1)
+[Flooder] Request 22/30 on Key 0 succeeded in 0.47s (Tokens: 72+1)
+[Flooder] Request 23/30 on Key 0 succeeded in 0.41s (Tokens: 72+1)
+[Flooder] Request 24/30 on Key 0 succeeded in 0.48s (Tokens: 72+1)
+[Flooder] Request 27/30 on Key 0 succeeded in 0.49s (Tokens: 72+1)
+[Flooder] Request 28/30 on Key 0 succeeded in 0.29s (Tokens: 72+1)
+[Flooder] Request 26/30 on Key 0 succeeded in 0.64s (Tokens: 72+1)
+[Flooder] Request 25/30 on Key 0 succeeded in 0.65s (Tokens: 72+1)
+[Flooder] Request 29/30 on Key 0 succeeded in 0.62s (Tokens: 72+1)
+[Flooder] Request 30/30 on Key 0 hit 429 RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kda69kytera817zjed61we3a` service tier `on_demand` on requests per minute (RPM): Limit 30, Used 30, Requested 1. Please try again in 2s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'requests', 'code': 'rate_limit_exceeded'}}
+============================================================
+FLOOD COMPLETE: Sent 30 requests on Key 0 in 9.98s
+Verified DB Usage: Groq Key 0 has 30 recorded calls in the last 60 seconds (Limit is 30 RPM).
+============================================================
+
+
+[Thread-Flooder] Flood of 30 requests finished.
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|##########| 199/199 [00:00<00:00, 3986.37it/s]
+
+[Thread-Agent] Calling agent.run() with prompt: can you fix the formatting of this python file:
+
+def add(a, b):
+return a+b
+...
+
+Routing task...
+Task classified as: Easy
+[Decision Engine] Prompt Estimated Tokens: 20
+
+[groq] Key 0 exceeded RPM limit (30/30). Skipping.
+Selected Candidate: groq -> openai/gpt-oss-20b (Key Index: 1)
+Output Capacity: 8000
+
+--- LLM RESPONSE ---
+Here’s the same function with proper Python formatting (indentation, optional type hints, and a brief docstring).  
+Feel free to drop the type hints or docstring if you don’t need them.
+
+```python
+def add(a, b):
+    """
+    Return the sum of two numbers.
+
+    Parameters
+    ----------
+    a : int | float
+        First operand.
+    b : int | float
+        Second operand.
+
+    Returns
+    -------
+    int | float
+        The result of a + b.
+    """
+    return a + b
+```
+
+If you only wanted the minimal indentation fix, the core change is:
+
+```python
+def add(a, b):
+    return a + b
+```
+
+Make sure the file ends with a newline (most editors add this automatically).
+
+[Thread-Agent] CodingAgent execution finished.
+
+
+===========================================================================
+TEST 2 COMPLETE in 19.24 seconds!
+Log saved to: C:\Users\satvi\OneDrive\Desktop\coding_agents\test\test_rate_limiter_output.log
+===========================================================================

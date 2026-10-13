@@ -10,6 +10,13 @@ from configuration.limits import get_max_output_tokens
 
 # Candidate models for the Easy pool (in decision priority order)
 EASY_CANDIDATES = [
+
+
+    {
+        "provider": "groq",
+        "model": "openai/gpt-oss-20b"
+    },
+    
     {
         "provider": "cloudflare",
         "model": "@cf/zai-org/glm-4.7-flash"
@@ -25,10 +32,6 @@ EASY_CANDIDATES = [
     {
         "provider": "ollama",
         "model": "gpt-oss:20b"
-    },
-    {
-        "provider": "groq",
-        "model": "openai/gpt-oss-20b"
     }
 ]
 
@@ -62,7 +65,7 @@ def create_client_for_provider(provider: str, api_key: str):
         client_instance = OpenAI(api_key=api_key, base_url=base_url)
         return client_instance
     elif provider == "ollama":
-        base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
+        base_url = os.getenv("OLLAMA_BASE_URL", "https://ollama.com/v1")
         client_instance = OpenAI(api_key=api_key, base_url=base_url)
         return client_instance
     else:

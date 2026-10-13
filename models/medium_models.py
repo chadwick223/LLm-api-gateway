@@ -74,7 +74,7 @@ def create_client_for_provider(provider: str, api_key: str):
         client_instance = OpenAI(api_key=api_key, base_url=base_url)
         return client_instance
     elif provider == "ollama":
-        base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
+        base_url = os.getenv("OLLAMA_BASE_URL", "https://ollama.com/v1")
         client_instance = OpenAI(api_key=api_key, base_url=base_url)
         return client_instance
     else:

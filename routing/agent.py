@@ -1,3 +1,10 @@
+import sys
+import os
+
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 from routing.layer import TaskRouter
 from models.easy_models import execute_easy_task
 from models.medium_models import execute_medium_task
@@ -25,7 +32,17 @@ class CodingAgent:
 if __name__ == "__main__":
     agent = CodingAgent()
     
-    # Test Prompt
-    prompt = " refactor this  code"
-    print(f"\nUser: {prompt}\n")
+    if len(sys.argv) > 1:
+        arg_val = sys.argv[1]
+        if os.path.exists(arg_val):
+            with open(arg_val, "r", encoding="utf-8") as file_handle:
+                prompt = file_handle.read()
+        else:
+            prompt = arg_val
+    else:
+        # Default Test Prompt
+        prompt = " refactor this  code"
+        
+    preview = prompt[:120] + "..." if len(prompt) > 120 else prompt
+    print(f"\nUser: {preview}\n")
     agent.run(prompt)

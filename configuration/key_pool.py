@@ -1,6 +1,13 @@
 import os
 import time
 from typing import List, Optional, Tuple
+from dotenv import load_dotenv
+
+env_path = os.path.join(os.path.dirname(__file__), ".env")
+if os.path.exists(env_path):
+    load_dotenv(env_path)
+else:
+    load_dotenv()
 
 class KeyPoolManager:
     def __init__(self):
@@ -26,7 +33,10 @@ class KeyPoolManager:
         if not env_var:
             return []
             
-        raw_keys = os.getenv(env_var, "")
+        if provider.lower() == "cloudflare":
+            raw_keys = os.getenv("CLOUDFLARE_API_KEY") or os.getenv("CLOUD_FLARE_API_KEY", "")
+        else:
+            raw_keys = os.getenv(env_var, "")
         
         # Split the string by commas
         split_keys = raw_keys.split(",")

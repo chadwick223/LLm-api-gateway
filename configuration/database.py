@@ -4,7 +4,11 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 from dotenv import load_dotenv
 
 # Load environment variables from .env
-load_dotenv()
+env_path = os.path.join(os.path.dirname(__file__), ".env")
+if os.path.exists(env_path):
+    load_dotenv(env_path)
+else:
+    load_dotenv()
 
 # 1. Connect to Neon DB
 DATABASE_URL = os.getenv("DATABASE_URL")
