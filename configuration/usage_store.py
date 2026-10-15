@@ -38,31 +38,23 @@ class UsageStoreManager:
             session.close()
 
     def count_calls_since(self, provider: str, key_index: int, since_ms: int) -> int:
-        """
-        Counts the total number of calls a specific key has made since a specific time.
-        For example, how many calls Groq key 0 made in the last 60 seconds.
-        """
         session = SessionLocal()
         try:
-            # Run a SQL query: COUNT(*) FROM api_calls WHERE ...
             count = session.query(CallRecord).filter(
                 CallRecord.provider == provider,
                 CallRecord.key_index == key_index,
                 CallRecord.ts >= since_ms
             ).count()
-            
             return count
-            
+        except Exception as e:
+            print(f"Failed to count calls: {e}")
+            return 0
         finally:
             session.close()
 
     def count_tokens_since(self, provider: str, key_index: int, since_ms: int) -> int:
-        """
-        Sums all prompt and completion tokens for a specific key since a specific time.
-        """
         session = SessionLocal()
         try:
-            # Run a SQL query: SUM(prompt_tokens + completion_tokens) FROM api_calls WHERE ...
             result = session.query(
                 func.sum(CallRecord.prompt_tokens + CallRecord.completion_tokens)
             ).filter(
@@ -71,11 +63,12 @@ class UsageStoreManager:
                 CallRecord.ts >= since_ms
             ).scalar()
             
-            # If the database returns None (because there are no records), return 0 instead
             if result is None:
                 return 0
             else:
                 return result
-                
+        except Exception as e:
+            print(f"Failed to count tokens: {e}")
+            return 0
         finally:
             session.close()

@@ -71,7 +71,7 @@ class UpdateKeysRequest(BaseModel):
 
 class TestKeyRequest(BaseModel):
     provider: str
-    key: str
+    key: Optional[str] = None
     extra: Optional[Dict[str, str]] = None
 
 # ----------------- API Endpoints -----------------
@@ -182,10 +182,13 @@ def update_provider_key_pool(req: UpdateKeysRequest):
 @app.post("/api/keys/test")
 def test_provider_key(req: TestKeyRequest):
     provider = req.provider.lower().strip()
-    test_key = req.key.strip()
+    test_key = req.key.strip() if req.key else ""
 
     if not test_key:
-        raise HTTPException(status_code=400, detail="No key provided for testing.")
+        keys = key_pool.get_keys(provider)
+        if not keys:
+            return {"valid": False, "message": f"No keys configured for {provider} in pool."}
+        test_key = keys[0]
 
     # Temporarily set extra env variables if testing Cloudflare
     if provider == "cloudflare" and req.extra and "account_id" in req.extra:
@@ -251,6 +254,17 @@ def get_gateway_metrics(limit: int = 50):
                 "error_calls": error_calls
             },
             "recent_calls": call_logs
+        }
+    except Exception as e:
+        print(f"Error fetching gateway metrics: {e}")
+        return {
+            "summary": {
+                "total_calls": 0,
+                "today_calls": 0,
+                "ok_calls": 0,
+                "error_calls": 0
+            },
+            "recent_calls": []
         }
     finally:
         session.close()

@@ -1,0 +1,228 @@
+/* ==========================================================================
+   AEGIS LLM GATEWAY - TELEMETRY & LOGS DASHBOARD
+   ========================================================================== */
+
+.telemetry-view-wrapper {
+  padding: 2rem 2.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.65rem;
+}
+
+/* Summary Card with Segmented Bar */
+.telemetry-summary-card {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.4rem 1.6rem;
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.tele-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.tele-metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tele-metric-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.tele-metric-num {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.tele-metric-num.text-green {
+  color: var(--badge-green-text);
+}
+
+.tele-metric-num.text-coral {
+  color: var(--badge-coral-text);
+}
+
+/* Segmented Ratio Progress Bar */
+.segmented-bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.segmented-progress-track {
+  width: 100%;
+  height: 6px;
+  background: var(--border-light);
+  border-radius: var(--radius-pill);
+  display: flex;
+  overflow: hidden;
+}
+
+.seg-fill-green {
+  background: #3c7d60;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.seg-fill-coral {
+  background: #c85a48;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.seg-labels-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Filter Bar Controls */
+.telemetry-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-left-segments {
+  display: flex;
+  background: var(--bg-surface-tint-light);
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  gap: 2px;
+}
+
+.segment-btn {
+  border: none;
+  background: transparent;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.segment-btn.active {
+  background: #ffffff;
+  color: var(--text-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.filter-right-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.select-filter-box {
+  background: transparent;
+  border: 1px solid var(--border-darker);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+}
+
+.search-input-box {
+  background: transparent;
+  border: 1px solid var(--border-darker);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  outline: none;
+  min-width: 170px;
+}
+
+.search-input-box:focus {
+  border-color: var(--accent-forest);
+}
+
+.search-input-box::placeholder {
+  color: var(--text-muted);
+}
+
+/* Telemetry Logs Table */
+.telemetry-data-table {
+  width: 100%;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border-collapse: collapse;
+}
+
+.telemetry-data-table th {
+  background: var(--bg-surface-tint-light);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 0.85rem 1.2rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.telemetry-data-table td {
+  padding: 0.95rem 1.2rem;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+}
+
+.telemetry-data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.telemetry-data-table tr:hover td {
+  background: var(--bg-surface-tint-light);
+}
+
+.status-pill-table {
+  display: inline-flex;
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.status-pill-table.ok {
+  background: var(--badge-green-bg);
+  color: var(--badge-green-text);
+}
+
+.status-pill-table.error {
+  background: var(--badge-coral-bg);
+  color: var(--badge-coral-text);
+}
+
+.tele-table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  padding-top: 0.5rem;
+}

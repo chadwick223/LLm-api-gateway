@@ -1,0 +1,61 @@
+/* ==========================================================================
+   AEGIS LLM GATEWAY - DESIGN SYSTEM VARIABLES & TOKENS
+   Warm Linen, Cream Paper, Forest Pine Green, Soft Sage & Peach
+   ========================================================================== */
+
+:root {
+  /* Canvas & Card Surfaces */
+  --bg-canvas: #f6f4ee;
+  --bg-card: #fcfbfa;
+  --bg-surface: #fcfbfa;
+  --bg-surface-tint: #ece8df;
+  --bg-surface-tint-light: #f3f0e8;
+  --bg-input: #ffffff;
+
+  /* Borders & Dividers */
+  --border-light: #e5e1d8;
+  --border-subtle: #eae6dd;
+  --border-darker: #dedad0;
+  --border-medium: #cfcabd;
+
+  /* Brand Accents */
+  --accent-forest: #2d5043;
+  --accent-forest-hover: #233f34;
+  --accent-forest-dark: #233f34;
+  --accent-forest-light: rgba(45, 80, 67, 0.1);
+
+  /* Status Colors */
+  --badge-green-bg: #dbe7dc;
+  --badge-green-text: #2d6a4f;
+  --badge-green-dot: #2d6a4f;
+
+  --badge-coral-bg: #fae6e2;
+  --badge-coral-text: #b84a39;
+
+  --badge-amber-bg: #fdf0d5;
+  --badge-amber-text: #b07d2b;
+
+  /* Text Colors */
+  --text-primary: #1e201e;
+  --text-secondary: #4a4d46;
+  --text-muted: #787c74;
+  --text-dim: #9aa096;
+
+  /* Typography */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Menlo, Consolas, monospace;
+
+  /* Border Radii */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-pill: 9999px;
+
+  /* Elevation Shadows */
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-input: 0 2px 8px rgba(0, 0, 0, 0.03);
+  --shadow-modal: 0 10px 40px rgba(0, 0, 0, 0.08);
+  --shadow-toast: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
