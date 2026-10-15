@@ -1,0 +1,114 @@
+/* ==========================================================================
+   AEGIS LLM GATEWAY - NAVBAR & HEADER NAVIGATION
+   ========================================================================== */
+
+.app-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.15rem 1.75rem;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-card);
+  flex-shrink: 0;
+}
+
+/* Brand Identity */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-icon-tile {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-forest);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-text-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+}
+
+.brand-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.brand-subtitle {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* Center Pill Navigation Buttons */
+.nav-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: transparent;
+}
+
+.nav-pill-btn {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  padding: 0.4rem 1.1rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.nav-pill-btn:hover {
+  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.nav-pill-btn.active {
+  background: var(--bg-surface-tint);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Right Status Badge */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-pill);
+  background: var(--badge-green-bg);
+  color: var(--badge-green-text);
+  transition: all 0.2s ease;
+}
+
+.status-pill.offline {
+  background: var(--badge-coral-bg);
+  color: var(--badge-coral-text);
+}
+
+.status-pill.offline .status-dot {
+  background-color: var(--badge-coral-text);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--badge-green-dot);
+  display: inline-block;
+}

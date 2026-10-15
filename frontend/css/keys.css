@@ -1,0 +1,263 @@
+/* ==========================================================================
+   AEGIS LLM GATEWAY - API KEYS AND POOLS VIEW
+   ========================================================================== */
+
+.keys-view-wrapper {
+  padding: 2rem 2.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.view-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.view-title-group h1 {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.view-title-group p {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+/* Reusable Outline Action Button (Refresh, Modal Cancel, etc) */
+.btn-outline-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: transparent;
+  border: 1px solid var(--border-darker);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 1rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.btn-outline-pill:hover {
+  background: var(--bg-surface-tint-light);
+  border-color: var(--border-light);
+}
+
+.btn-outline-pill:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 4-Stat Metric Summary Box */
+.summary-4box {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  overflow: hidden;
+}
+
+.stat-quad-col {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border-right: 1px solid var(--border-light);
+}
+
+.stat-quad-col:last-child {
+  border-right: none;
+}
+
+.stat-quad-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.stat-quad-val {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-quad-val.text-green {
+  color: var(--badge-green-text);
+}
+
+.stat-quad-val.text-plain {
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+/* Provider Key Pool Table */
+.provider-list-table {
+  width: 100%;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border-collapse: collapse;
+}
+
+.provider-list-table th {
+  background: var(--bg-surface-tint-light);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 0.85rem 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.provider-list-table td {
+  padding: 1.35rem 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: middle;
+}
+
+.provider-list-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Provider Identity Column */
+.provider-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 190px;
+}
+
+.provider-name-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.prov-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.prov-models-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* Key Pool Masked Bullets */
+.key-bullets-cell {
+  min-width: 200px;
+}
+
+.key-bullet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.key-bullet-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-primary);
+}
+
+.key-green-bullet {
+  color: var(--badge-green-dot);
+  font-size: 0.7rem;
+}
+
+.key-green-bullet.cooling {
+  color: var(--badge-coral-text);
+}
+
+/* Usage Today Progress Tracks */
+.usage-cell {
+  min-width: 210px;
+}
+
+.usage-dual-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.usage-subgroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.usage-meta-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.slim-track {
+  width: 100%;
+  height: 4px;
+  background: var(--border-light);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.slim-fill {
+  height: 100%;
+  background: var(--accent-forest);
+  border-radius: var(--radius-pill);
+  transition: width 0.3s ease;
+}
+
+/* Action Buttons (Test Ping & Manage) */
+.actions-cell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.action-buttons-group {
+  display: inline-flex;
+  gap: 0.45rem;
+}
+
+.btn-table-action {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid var(--border-darker);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.btn-table-action:hover {
+  background: var(--bg-surface-tint-light);
+  color: var(--text-primary);
+}
+
+.btn-table-action.manage-btn {
+  border-color: var(--accent-forest);
+  color: var(--accent-forest);
+}
+
+.btn-table-action.manage-btn:hover {
+  background: var(--accent-forest-light);
+}

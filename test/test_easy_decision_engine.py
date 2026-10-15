@@ -21,11 +21,11 @@ class TestEasyDecisionEngine(unittest.TestCase):
     def test_candidates_list(self):
         # Verify the candidates list contains all 5 required models
         expected = [
+            ("groq", "openai/gpt-oss-20b"),
             ("cloudflare", "@cf/zai-org/glm-4.7-flash"),
             ("gemini", "gemini-3.1-flash-lite"),
             ("nvidia", "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"),
             ("ollama", "gpt-oss:20b"),
-            ("groq", "openai/gpt-oss-20b"),
         ]
         self.assertEqual(len(EASY_CANDIDATES), 5)
         for i in range(len(expected)):
